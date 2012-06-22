@@ -6,53 +6,82 @@
 		<meta name="description" content="Game of Life" />
 		<meta name="keywords" content="game of life, game,life,jogo,vida,jogo da vida" />
 		<meta name="author" content="Thiago Nascimento" />
-		<meta name="revised" content="Thiago Nascimento, 07/06/2012" />
-		<meta property="og:site_name" content="" />
-		<meta property="og:title" content="Game of Life - By Thiago Nascimento" />
+		<meta name="revised" content="Thiago Nascimento, 22/06/2012" />
 		<link type="text/css" rel="stylesheet" href="css/redmond/jquery-ui-1.8.21.custom.css " />
 		<link type="text/css" rel="stylesheet" href="css/style.css" />
 		<script type="text/javascript" src="js/jquery-1.7.2.min.js" ></script>
 		<script type="text/javascript" src="js/jquery-ui-1.8.21.custom.min.js"></script>
-		<script type="text/javascript" src="js/game.js"></script>
+		<script type="text/javascript" src="js/gameoflife.js"></script>
 		<script type="text/javascript" src="js/main.js"></script>				
 	</head>
 	<body>
 		<div id="header">
-			<h1>Game of Life </h1>	
-			<span id="author"> By Thiago Nascimento</span>	
-		</div>
+			<img id="logo" src="images/logo.png" alt="Logotipo"/>
+			<div id="divHelp">
+				<a href="#" id="anchorOpenHelp">How it works?</a>
+			</div>	
+		</div>	
 		<div id="menu">
-			<h4>Control Panel</h4>
-			<a href="#" id="buttonPlayStop" class="button">Play</a>
-			<a href="#" id="buttonStep" class="button">Step</a>
-			<a href="#" id="buttonClear" class="button">Clear</a>
-			<h4>Information</h4>
-			<p id="spanGeneration">Generation: 0</p>
-			<p id="spanAlive">Alive: 0</p>
-			<p id="spanDead">Dead: 0</p>			
-			<h4>Like this page</h4>
-						
-			<div class="social">
-				<div class="fb-like" data-send="false" data-layout="button_count" data-width="215" data-show-faces="true"></div>
-				<div id="fb-root"></div>
-				<script>(function(d, s, id) {
-					var js, fjs = d.getElementsByTagName(s)[0];
-					if (d.getElementById(id)) return;
-					js = d.createElement(s); js.id = id;
-					js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";
-					fjs.parentNode.insertBefore(js, fjs);
-					}(document, 'script', 'facebook-jssdk'));
+			<div id="divControlPane">
+				<a href="#" id="buttonPlay" class="button">Play</a>			
+				<a href="#" id="buttonStep" class="button">Step</a>
+				<a href="#" id="buttonClear" class="button">Clear</a>
+			</div>			
+			<div id="divSpeed">
+				<label id="labelSpeed">Speed: 7</label>
+				<div id="sliderSpeed"></div>
+			</div>
+			<div id="divSocial">
+				<div id="divFacebook">
+					<div class="fb-like" data-send="true" data-layout="button_count" data-show-faces="false"></div>
+					
+					<div id="fb-root"></div>
+					<script>(function(d, s, id) {
+					  var js, fjs = d.getElementsByTagName(s)[0];
+					  if (d.getElementById(id)) return;
+					  js = d.createElement(s); js.id = id;
+					  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";
+					  fjs.parentNode.insertBefore(js, fjs);
+					}(document, 'script', 'facebook-jssdk'));</script>
+				</div>
+				<div id="divTwitter">
+					<a href="https://twitter.com/share" class="twitter-share-button" data-via="thiagodnf">Tweet</a>
+					<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+				</div>
+				<g:plusone size="medium"></g:plusone>
+				<script type="text/javascript">
+				  (function() {
+				    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+				    po.src = 'https://apis.google.com/js/plusone.js';
+				    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+				  })();
 				</script>
 			</div>
-			<div class="social"><a href="https://twitter.com/share" class="twitter-share-button" data-via="thiagodnf">Tweet</a></div>
-			<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
 			
-			<script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script>
-			<div class="social"><g:plusone></g:plusone></div>
+		</div>	
+		<canvas id="canvasGame" width="600" height="400"></canvas>
+		<div id="dialog-modal" title="Game of Life">
+			<h3>What is this?</h3>
+			<p align="justify">
+				The Game of Life, also known simply as Life, is a cellular automaton 
+				devised by the British mathematician John Horton Conway in 1970.
+				<br><br>
+				The "game" is a zero-player game, meaning that its evolution is determined 
+				by its initial state, requiring no further input. One interacts with 
+				the Game of Life by creating an initial configuration and observing
+				how it evolves.
+			</p>
+			<h3>Rules</h3>
 			
+			<ul>
+				<li>Any live cell with fewer than two live neighbours dies, as if caused by under-population.</li>
+				<li>Any live cell with two or three live neighbours lives on to the next generation.</li>
+				<li>Any live cell with more than three live neighbours dies, as if by overcrowding.</li>
+				<li>Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.</li>			
+			</ul>			
+			<br><br>
+			<p align="right">More in: &nbsp; <a href="http://en.wikipedia.org/wiki/Conway's_Game_of_Life" target="blank">Wikipedia</a></p>
 			
-		</div>
-		<canvas id="canvasGame" width="300" height="300"></canvas>
-		
+		</div>		
 	</body>
-<html>
+</html>

@@ -1,151 +1,172 @@
 var mouseX = 0;
 var mouseY = 0;
+
 var context = 0;
+var canvas = 0;
+
 var game = 0;
+
+var speed = 7;
 var isPlay = false;
+var isPress = false;
 
-function step(){
+function play() {
 	game.step();
-    game.paint();
-   	updateInformation();
+	if (isPlay)
+		setTimeout(play, (10-speed)*100);
 }
 
-function play(){
-	step();    
-    if(isPlay)
-		setTimeout(play,300);
-}
 
-function restart(){
-	game.generation = 0;
-	game.alive = 0;
-	game.dead = 0;
-	updateInformation();
-}
-
-function updateInformation(){
-	 $("#spanGeneration").text("Generation: "+game.generation);
-	 $("#spanAlive").text("Alive: "+game.alive);
-	 $("#spanDead").text("Dead: "+game.dead);
+function resizeCanvas() {
+	if ($(window).width() < 600)
+		context.canvas.width = $("#menu").width() - 10;
+	else
+		context.canvas.width = $("#menu").width() - 10;
+	if ($(window).height() < 400)
+		context.canvas.height = 400;
+	else
+		context.canvas.height = $(window).height() - 135;
 }
 
 $(function() {
-  	var canvas = document.getElementById('canvasGame'),
-    context = canvas.getContext('2d');
-    
-    var amount_y = 0;
-    var amount_x = 0;
-    var size_height = 0;
-    var size_width = 0;
-    
-	var height = $(window).height()-$("#canvasGame").position().top-50;
-	var width = $(window).width()-$("#canvasGame").position().left-60;
+	canvas = document.getElementById('canvasGame');
+	context = canvas.getContext('2d');
+
+	resizeCanvas();
+
+	game = new GameOfLife(context, context.canvas.height, context.canvas.width);
+	game.drawGrid();
+
+	game.drawCell(29, 68);
 	
-	while(size_height < height){
-		amount_y++;
-		size_height += 15;			
-	}
+	$( "#sliderSpeed" ).slider({
+		range: "min",
+		value:7,
+		min: 1,
+		max: 10,
+		step: 1,
+		slide: function( event, ui ) {
+			speed = ui.value;
+			$( "#labelSpeed" ).text( "Speed: " + ui.value );
+		}
+	});
+
+	$( "#dialog:ui-dialog" ).dialog( "destroy" );
 	
-	while(size_width < width){
-		amount_x++;
-		size_width += 15;			
-	}
+	$( "#dialog-modal" ).dialog({
+		autoOpen: false,
+		height: 350,
+		show: "drop",
+		hide: "drop",
+		width: 550,		
+		modal: true,
+		buttons: {
+			Close: function() {
+				$( this ).dialog( "close" );
+			}
+		}
+	});
+	
+	$( "#anchorOpenHelp" ).click(function() {
+		$( "#dialog-modal" ).dialog( "open" );
+	});
+
+	$("#buttonPlay").button({
+		icons : {
+			primary : "ui-icon-play"
+		}
+	});
+
+	$("#buttonStop").button({
+		icons : {
+			primary : "ui-icon-stop"
+		}
+	});
+
+	$("#buttonStep").button({
+		icons : {
+			primary : "ui-icon-seek-end"
+		}
+	});
+
+	$("#buttonClear").button({
+		icons : {
+			primary : "ui-icon-trash"
+		}
+	});
+
+	$(window).resize(function(e) {
+
+	});
+
+	$("#canvasGame").mousemove(function(e) {
+		if (e.offsetX) {
+			mouseX = e.offsetX;
+			mouseY = e.offsetY;
+		} else if (e.layerX) {
+			mouseX = e.layerX;
+			mouseY = e.layerY;
+		} else if (e.clientX) { // Firefox
+			mouseX = e.clientX - $("#canvasGame").offset().left;
+			mouseY = e.clientY - $("#canvasGame").offset().top;
+		}	
 		
-	canvas.height = size_height;
-	canvas.width = size_width; 
-    
-	game = new GameOfLife(context,amount_y,amount_x);  	
-    game.drawGrid();    
-    game.paint(); 
-    
-    $("#buttonPlayStop").button({
-    	icons: {
-        	primary: "ui-icon-play"
-        }
-    });
-    $("#buttonStep").button({
-    	icons: {
-			primary: "ui-icon-seek-end"
-        }
-    });
-    $("#buttonClear").button({
-    	icons: {
-			primary: "ui-icon-trash"
-        }
-    });    	   
-    
-    $("#buttonPlayStop").click(function() { 
-    	isPlay = ! isPlay;
-   	   	if ( isPlay ) {
-    		restart();
-	    	$("#buttonStep").fadeTo("fast", .4); 
-	    	$("#buttonClear").fadeTo("fast", .4); 
+		if(isPress){
+			game.live(mouseX,mouseY);
+		}
+	});
+
+	$("#canvasGame").click(function(e) {
+		//if(!isPlay && !isPress)
+			//game.toggleStatus(mouseX, mouseY);
+	});
+	
+	 $("#buttonClear").click(function(e) {
+		 if(!isPlay){
+			 game.clear();
+		 }
+	 });
+
+	$("#buttonStep").click(function(e) {
+		if(!isPlay)
+			game.step();
+	});
+
+	//    
+	 $("#buttonPlay").click(function() {
+		isPlay = !isPlay;
+		if (isPlay) {
+			$("#buttonStep").fadeTo("fast", .4);
+			$("#buttonClear").fadeTo("fast", .4);
 			options = {
-				label: "Stop",
-				icons: {
-					primary: "ui-icon-stop"
+				label : "Pause",
+				icons : {
+					primary : "ui-icon-pause"
 				}
 			};
 			play();
-		} else {
-			$("#buttonStep").fadeTo("fast",1.9);
-			$("#buttonClear").fadeTo("fast",1.9); 
+		} else {			
+			$("#buttonStep").fadeTo("fast", 1.9);
+			$("#buttonClear").fadeTo("fast", 1.9);
 			options = {
-				label: "Play",
-				icons: {
-					primary: "ui-icon-play"
+				label : "Play",
+				icons : {
+					primary : "ui-icon-play"
 				}
 			};
-		}	
-    	$( this ).button( "option", options );
-    });     
-    
-	$("#buttonStep").click(function(e) { 
-		if(!isPlay)
-	    	step();
-    }); 
-    
-    $("#buttonClear").click(function(e) { 
-		if( ! isPlay){
-			game.clear();
-			restart();		
 		}
-    });       
-	
-	$("#canvasGame").click(function(e){
-		if(! isPlay){
-			game.toggleStatus(mouseX,mouseY);
-			game.paint();
-		}
+		$(this).button("option", options);
 	});
-	
+	    
 	$("#canvasGame").mouseup(function(){
-		
+		isPress = ! isPress;
+						
+	 });
+
+	$("#canvasGame").mousedown(function() {
+		isPress = ! isPress;
+		game.toggleStatus(mouseX, mouseY);
 	});
-	
-	$("#canvasGame").mousedown(function(){
 		
-	});
-	
-	$("#canvasGame").mousemove(function(e){
-		if(e.offsetX) {
-		    mouseX = e.offsetX;
-		    mouseY = e.offsetY;
-		}
-		else if(e.layerX) {
-		    mouseX = e.layerX;
-		    mouseY = e.layerY;
-		}else if(e.clientX){
-			mouseX = e.clientX-$("#canvasGame").position().left-23;
-			mouseY = e.clientY-$("#canvasGame").position().top-20;
-		}
-		//$("#mouseX").text("MouseX: "+mouseX);
-		//$("#mouseY").text("MouseY: "+mouseY);
-	});	
+
 });
-
-
-
-
-
-
