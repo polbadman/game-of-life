@@ -13,9 +13,8 @@ var isPress = false;
 function play() {
 	game.step();
 	if (isPlay)
-		setTimeout(play, (10-speed)*100);
+		setTimeout(play, (10 - speed) * 100);
 }
-
 
 function resizeCanvas() {
 	if ($(window).width() < 600)
@@ -38,37 +37,37 @@ $(function() {
 	game.drawGrid();
 
 	game.drawCell(29, 68);
-	
-	$( "#sliderSpeed" ).slider({
-		range: "min",
-		value:7,
-		min: 1,
-		max: 10,
-		step: 1,
-		slide: function( event, ui ) {
+
+	$("#sliderSpeed").slider({
+		range : "min",
+		value : 7,
+		min : 1,
+		max : 10,
+		step : 1,
+		slide : function(event, ui) {
 			speed = ui.value;
-			$( "#labelSpeed" ).text( "Speed: " + ui.value );
+			$("#labelSpeed").text("Speed: " + ui.value);
 		}
 	});
 
-	$( "#dialog:ui-dialog" ).dialog( "destroy" );
-	
-	$( "#dialog-modal" ).dialog({
-		autoOpen: false,
-		height: 350,
-		show: "drop",
-		hide: "drop",
-		width: 550,		
-		modal: true,
-		buttons: {
-			Close: function() {
-				$( this ).dialog( "close" );
+	$("#dialog:ui-dialog").dialog("destroy");
+
+	$("#dialog-modal").dialog({
+		autoOpen : false,
+		height : 350,
+		show : "drop",
+		hide : "drop",
+		width : 550,
+		modal : true,
+		buttons : {
+			Close : function() {
+				$(this).dialog("close");
 			}
 		}
 	});
-	
-	$( "#anchorOpenHelp" ).click(function() {
-		$( "#dialog-modal" ).dialog( "open" );
+
+	$("#anchorOpenHelp").click(function() {
+		$("#dialog-modal").dialog("open");
 	});
 
 	$("#buttonPlay").button({
@@ -109,31 +108,31 @@ $(function() {
 		} else if (e.clientX) { // Firefox
 			mouseX = e.clientX - $("#canvasGame").offset().left;
 			mouseY = e.clientY - $("#canvasGame").offset().top;
-		}	
-		
-		if(isPress){
-			game.live(mouseX,mouseY);
+		}
+
+		if (isPress) {
+			game.live(mouseX, mouseY);
 		}
 	});
 
 	$("#canvasGame").click(function(e) {
-		//if(!isPlay && !isPress)
-			//game.toggleStatus(mouseX, mouseY);
+		// if(!isPlay && !isPress)
+		// game.toggleStatus(mouseX, mouseY);
 	});
-	
-	 $("#buttonClear").click(function(e) {
-		 if(!isPlay){
-			 game.clear();
-		 }
-	 });
+
+	$("#buttonClear").click(function(e) {
+		if (!isPlay) {
+			game.clear();
+		}
+	});
 
 	$("#buttonStep").click(function(e) {
-		if(!isPlay)
+		if (!isPlay)
 			game.step();
 	});
 
 	//    
-	 $("#buttonPlay").click(function() {
+	$("#buttonPlay").click(function() {
 		isPlay = !isPlay;
 		if (isPlay) {
 			$("#buttonStep").fadeTo("fast", .4);
@@ -145,7 +144,7 @@ $(function() {
 				}
 			};
 			play();
-		} else {			
+		} else {
 			$("#buttonStep").fadeTo("fast", 1.9);
 			$("#buttonClear").fadeTo("fast", 1.9);
 			options = {
@@ -157,16 +156,20 @@ $(function() {
 		}
 		$(this).button("option", options);
 	});
-	    
-	$("#canvasGame").mouseup(function(){
-		isPress = ! isPress;
-						
-	 });
+
+//	$("#canvasGame").mouseup(function() {
+//		isPress = !isPress;
+//
+//	});
+
+	$(document).mouseup(function() {
+		isPress = false;
+
+	});
 
 	$("#canvasGame").mousedown(function() {
-		isPress = ! isPress;
+		isPress = true;
 		game.toggleStatus(mouseX, mouseY);
 	});
-		
 
 });
