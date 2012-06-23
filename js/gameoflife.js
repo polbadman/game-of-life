@@ -58,6 +58,26 @@ function GameOfLife(context, height, width) {
 			}
 		}		
 	};
+	
+	this.addValue = function(values){
+		for(var pos=0;pos<values.length;pos +=2){
+			var i = values[pos];
+			var j = values[pos+1];				
+			this.live(i,j);
+		}
+	};
+	
+	this.getLink = function(){
+		var link = "";
+		for ( var y = 0; y < this.lines; y++) {
+			for ( var x = 0; x < this.columns; x++) {
+				if(this.matrix[y][x] == 1){
+					link += y+","+x+",";
+				}
+			}
+		}
+		return "#"+link.substr(0,link.length-1);
+	};
 
 	this.getMatrix = function(lines, columns) {
 		var matrix = new Array(lines);
@@ -71,7 +91,15 @@ function GameOfLife(context, height, width) {
 		return matrix;
 	};
 	
-	this.live = function(posX, posY) {
+	this.live = function(i,j) {	
+		if (i < 0 || i >= this.lines || j < 0 || j >= this.columns)
+			return;
+		
+		this.matrix[i][j] = 1;
+		this.drawCell(i,j);
+	};
+	
+	this.liveByPosition = function(posX, posY) {
 		var x = Math.floor(posX / 18);
 		var y = Math.floor(posY / 18);
 
@@ -102,14 +130,14 @@ function GameOfLife(context, height, width) {
 		if (i < 0 || i >= this.lines || j < 0 || j >= this.columns)
 			return;
 
-		if (this.matrix[i][j] == 1)
+		if (this.matrix[i][j] == 1){
 			this.context.fillStyle = "rgb(0,0,0)"; // Preto
-		else
-			this.context.fillStyle = "rgb(255,255,255)"; // Branco
-
-		this.context.fillRect(j * 18 + 2, i * 15 + 2 + 3 * i, 13, 13);
-		this.context.fill();
-		this.context.stroke();
+			this.context.fillRect(j * 18 + 2, i * 15 + 2 + 3 * i, 13, 13);
+			this.context.fill();
+			this.context.stroke();
+		}else{
+			this.context.clearRect(j * 18 + 2, i * 15 + 2 + 3 * i, 13, 13);			
+		}		
 	};
 
 	this.drawGrid = function() {
@@ -122,6 +150,13 @@ function GameOfLife(context, height, width) {
 		}
 		this.context.fill();
 		this.context.stroke();
+	};
+	
+	this.removeGrid = function() {
+		this.context.clearRect(0,0,this.widthScreen,this.heightScreen);
+		for ( var y = 0; y < this.lines; y++)
+			for ( var x = 0; x < this.columns; x++)
+				this.drawCell(y,x);
 	};
 
 	this.rule = function(amount) {

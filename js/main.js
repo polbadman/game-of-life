@@ -9,6 +9,7 @@ var game = 0;
 var speed = 7;
 var isPlay = false;
 var isPress = false;
+var showGrid = true;
 
 function play() {
 	game.step();
@@ -27,16 +28,28 @@ function resizeCanvas() {
 		context.canvas.height = $(window).height() - 135;
 }
 
+function openLink(param){
+	var regex = "^#[0-9][0-9]*(,[0-9][0-9]*)*$";	
+	if (param.match(regex)) {
+		var values = param.replace("#","").split(",");				
+		if(values.length%2 == 0){
+			game.addValue(values);
+		}else
+			console.log("fail!");
+	}
+}
+
 $(function() {
 	canvas = document.getElementById('canvasGame');
 	context = canvas.getContext('2d');
 
 	resizeCanvas();
-
+	
 	game = new GameOfLife(context, context.canvas.height, context.canvas.width);
 	game.drawGrid();
-
-	game.drawCell(29, 68);
+	
+	
+	openLink(location.hash);
 
 	$("#sliderSpeed").slider({
 		range : "min",
@@ -49,7 +62,12 @@ $(function() {
 			$("#labelSpeed").text("Speed: " + ui.value);
 		}
 	});
+	
+	$(document).bind("contextmenu",function(e){
+        return false;
+	});	
 
+	$("#labelButtonGrid").addClass("ui-state-active");
 	$("#dialog:ui-dialog").dialog("destroy");
 
 	$("#dialog-modal").dialog({
@@ -68,6 +86,36 @@ $(function() {
 
 	$("#anchorOpenHelp").click(function() {
 		$("#dialog-modal").dialog("open");
+	});
+	
+	$("#dialog-share").dialog({
+		autoOpen : false,
+		height : 180,
+		show : "drop",
+		hide : "drop",
+		width : 550,
+		modal : true,
+		buttons : {
+			Close : function() {
+				$(this).dialog("close");
+			}
+		}
+	});
+	
+	$("#input-link-share").focus(function(){
+	    this.select();	    
+	});
+	
+	$("#buttonShare").click(function() {
+		$("#input-link-share").val(location.hostname+"/gameoflife/"+game.getLink());
+		$("#input-link-share").focus();
+		$("#dialog-share").dialog("open");
+	});
+	
+	$("#buttonGrid").button({
+		icons : {
+			primary : "ui-icon-calculator"
+		}
 	});
 
 	$("#buttonPlay").button({
@@ -93,6 +141,12 @@ $(function() {
 			primary : "ui-icon-trash"
 		}
 	});
+	
+	$("#buttonShare").button({
+		icons : {
+			primary : "ui-icon-link"
+		}
+	});
 
 	$(window).resize(function(e) {
 
@@ -111,7 +165,7 @@ $(function() {
 		}
 
 		if (isPress) {
-			game.live(mouseX, mouseY);
+			game.liveByPosition(mouseX, mouseY);
 		}
 	});
 
@@ -123,6 +177,18 @@ $(function() {
 	$("#buttonClear").click(function(e) {
 		if (!isPlay) {
 			game.clear();
+		}
+	});
+	
+	$("#buttonGrid").click(function(e) {
+		
+		showGrid = ! showGrid;
+		if(showGrid){
+			$("#labelButtonGrid").addClass("ui-state-active");
+			game.drawGrid();
+		}else{
+			game.removeGrid();
+			$("#labelButtonGrid").removeClass("ui-state-active");
 		}
 	});
 
