@@ -165,6 +165,39 @@ p {
 	height: 25px;
 }
 
+
+
+#divContainerZoom{
+	-moz-border-radius-topleft:5px;
+    -moz-border-radius-bottomleft:5px;
+    -moz-border-radius-bottomright:5px;
+    -webkit-border-top-left-radius:5px;
+    -webkit-border-bottom-left-radius:5px;
+    -webkit-border-bottom-right-radius:5px;
+    display:none; 
+    /* background-color:#ddeef6; */
+    background-color: white;
+    position:absolute;
+    width:210px;
+    z-index:100;
+    border:1px transparent;
+    text-align:left;
+    padding:12px;
+    top: 100px;
+    /* left: 20px; */
+    /* right: 0px; */
+    margin-top:5px;
+    margin-right: 0px;
+    *margin-right: -1px;
+    color:#789;
+    font-size:11px;
+}
+
+
+
+
+
+
 #divSocial {
 	padding-top: 1px;
 	float: right;

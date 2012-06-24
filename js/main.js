@@ -63,6 +63,18 @@ $(function() {
 		}
 	});
 	
+	$("#sliderZoom").slider({
+		range : "min",
+		value : 1,
+		min : 1,
+		max : 10,
+		step : 1,
+		slide : function(event, ui) {
+			game.zoom(ui.value);
+			$("#labelZoom").text("Zoom: " + ui.value);
+		}
+	});
+	
 	$(document).bind("contextmenu",function(e){
         return false;
 	});	
@@ -115,6 +127,12 @@ $(function() {
 	$("#buttonGrid").button({
 		icons : {
 			primary : "ui-icon-calculator"
+		}
+	});
+	
+	$("#buttonZoom").button({
+		icons : {
+			primary : "ui-icon-zoomin"
 		}
 	});
 
@@ -183,19 +201,37 @@ $(function() {
 	$("#buttonGrid").click(function(e) {
 		
 		showGrid = ! showGrid;
+		game.showGrid = showGrid;
 		if(showGrid){
 			$("#labelButtonGrid").addClass("ui-state-active");
 			game.drawGrid();
-		}else{
+		}else{			
 			game.removeGrid();
 			$("#labelButtonGrid").removeClass("ui-state-active");
 		}
+		
 	});
 
 	$("#buttonStep").click(function(e) {
 		if (!isPlay)
 			game.step();
 	});
+	
+	$("#buttonZoom").click(function(e) {
+		e.preventDefault();
+		
+		var pos = $(this).position();
+		$("#divContainerZoom").css("left",(pos.left)+"px");
+		console.log(pos.left);
+		
+		
+		
+		$("#divContainerZoom").toggle();
+        
+        
+        
+       // $(".signin").toggleClass("menu-open");
+    });
 
 	//    
 	$("#buttonPlay").click(function() {
@@ -228,9 +264,32 @@ $(function() {
 //
 //	});
 
-	$(document).mouseup(function() {
+	$(document).mouseup(function(e) {
 		isPress = false;
-
+		
+		var parent = $(e.target).parent();
+		
+//		if($("#divContainerZoom").is(":visible") == true){
+//			console.log("visible");
+//		}
+		$("#divContainerZoom").hide();
+			
+		//console.log(parent[0].id);
+		if(e.target.id == "divContainerZoom" 
+			|| parent[0].id == "divContainerZoom" 
+				|| parent[0].id == "sliderZoom"){
+			$("#divContainerZoom").show();
+		}
+		
+		if(parent[0].id == "buttonZoom"){
+			//console.log("o2");
+			
+//				console.log("oi");
+//				$("#divContainerZoom").hide();
+//			}
+		}
+		
+		//console.log($("#divContainerZoom").is(':visible'));
 	});
 
 	$("#canvasGame").mousedown(function() {

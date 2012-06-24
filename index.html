@@ -40,12 +40,14 @@
 				<a href="#" id="buttonClear" class="button">Clear</a>
 				<a href="#" id="buttonShare" class="button">Share</a>
 				<input type="checkbox" id="buttonGrid" /><label id="labelButtonGrid" for="buttonGrid">Grid</label>
+				<a href="#" id="buttonZoom" class="button">Zoom</a>
 				<!-- <a href="#" id="buttonGrid" class="button">Grid</a> -->
 			</div>			
 			<div id="divSpeed">
 				<label id="labelSpeed">Speed: 7</label>
 				<div id="sliderSpeed"></div>
 			</div>
+			<!-- 
 			<div id="divSocial">
 				<div id="divFacebook">
 					<div class="fb-like" data-send="true" data-layout="button_count" data-show-faces="false"></div>
@@ -72,7 +74,7 @@
 				  })();
 				</script>
 			</div>
-			
+			 -->
 		</div>	
 		<canvas id="canvasGame" width="600" height="400"></canvas>
 		<div id="dialog-modal" title="Game of Life">
@@ -101,6 +103,10 @@
 		<div id="dialog-share" title="Share this map">
 			<label id="label-link-share">Copy this link.</label><br>
 			<input id="input-link-share" type="text"/>
+		</div>
+		<div id="divContainerZoom">
+			<label id="labelZoom">Zoom: 1</label>
+			<div id="sliderZoom"></div>
 		</div>		
 	</body>
 </html>

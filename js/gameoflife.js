@@ -1,3 +1,6 @@
+var SIZE = 15;
+
+
 function Cell(i, j) {
 	this.i = i;
 	this.j = j;
@@ -10,6 +13,7 @@ function GameOfLife(context, height, width) {
 	this.matrix;
 	this.lines;
 	this.columns;
+	this.showGrid = true;
 
 	this.constructor = function(context, height, width) {
 		this.context = context;
@@ -26,22 +30,57 @@ function GameOfLife(context, height, width) {
 		var size_width = 0;
 
 		while (size_height < this.heightScreen) {
-			if (size_height + 18 > this.heightScreen)
+			if (size_height + SIZE+3 > this.heightScreen)
 				break;
 			this.lines++;
-			size_height += 18;
+			size_height += SIZE+3;
 		}
 		while (size_width < this.widthScreen) {
-			if (size_width + 18 > this.widthScreen)
+			if (size_width + SIZE+3 > this.widthScreen)
 				break;
 			this.columns++;
-			size_width += 18;
+			size_width += SIZE+3;
 		}
 		// Redimensiona o canvas novamente para caber todos os quadrados
-		this.context.canvas.width = 18 * this.columns;
-		this.context.canvas.height = 18 * this.lines;
+		this.context.canvas.width = (SIZE+3) * this.columns;
+		this.context.canvas.height = (SIZE+3) * this.lines;
 	};
-
+	
+	this.zoom = function(value){
+		SIZE = 16-value;
+		var auxLines =this.lines;
+		var auxColumns = this.columns;
+		var beforeCenter = new Cell(Math.floor(auxLines/2),Math.floor(auxColumns/2));
+		
+		this.lines = 0;
+		this.columns = 0;
+		this.init();
+		var auxMatrix = this.getMatrix(this.lines, this.columns);
+		var afterCenter = new Cell(Math.floor(this.lines/2),Math.floor(this.columns/2));
+		
+		var varJ = afterCenter.j-beforeCenter.j;
+		var varI = afterCenter.i-beforeCenter.i;
+			
+		for(var i=0;i<auxLines;i++){
+			for(var j=0;j<auxColumns;j++){
+				if(this.matrix[i][j] == 1){
+					auxMatrix[i+varI][j+varJ] = 1;
+					//this.drawCell(i+varI, j+varJ);
+				}
+			}
+		}
+		this.matrix = auxMatrix;
+		this.drawGrid();
+		for(var i=0;i<auxLines;i++){
+			for(var j=0;j<auxColumns;j++){
+				if(this.matrix[i][j] == 1){
+					this.drawCell(i, j);
+				}
+			}
+		}
+	};
+	
+	
 	this.isAlive = function(y, x) {
 		return this.matrix[y][x] == 1;
 	};
@@ -100,8 +139,8 @@ function GameOfLife(context, height, width) {
 	};
 	
 	this.liveByPosition = function(posX, posY) {
-		var x = Math.floor(posX / 18);
-		var y = Math.floor(posY / 18);
+		var x = Math.floor(posX / (SIZE+3));
+		var y = Math.floor(posY / (SIZE+3));
 
 		if (x > this.widthScreen || y > this.heightScreen)
 			return;
@@ -112,8 +151,8 @@ function GameOfLife(context, height, width) {
 	};
 
 	this.toggleStatus = function(posX, posY) {
-		var x = Math.floor(posX / 18);
-		var y = Math.floor(posY / 18);
+		var x = Math.floor(posX / (SIZE+3));
+		var y = Math.floor(posY / (SIZE+3));
 
 		if (x > this.widthScreen || y > this.heightScreen)
 			return;
@@ -132,24 +171,27 @@ function GameOfLife(context, height, width) {
 
 		if (this.matrix[i][j] == 1){
 			this.context.fillStyle = "rgb(0,0,0)"; // Preto
-			this.context.fillRect(j * 18 + 2, i * 15 + 2 + 3 * i, 13, 13);
+			this.context.fillRect(j * (SIZE+3) + 2, i * (SIZE+3) + 2,(SIZE-2), (SIZE-2));
 			this.context.fill();
 			this.context.stroke();
 		}else{
-			this.context.clearRect(j * 18 + 2, i * 15 + 2 + 3 * i, 13, 13);			
+			this.context.clearRect(j * (SIZE+3) + 2, i * (SIZE+3) + 2,(SIZE-2),(SIZE-2));			
 		}		
 	};
 
 	this.drawGrid = function() {
-		for ( var y = 0; y < this.lines; y++) {
-			for ( var x = 0; x < this.columns; x++) {
-				this.context.fillStyle = "rgb(15,115,115)";
-				this.context.strokeRect(x * 18 + 1, y * 18 + 1, 15, 15);
-				this.drawCell(y,x);
+		if(this.showGrid){
+			for ( var y = 0; y < this.lines; y++) {
+				for ( var x = 0; x < this.columns; x++) {
+					this.context.fillStyle = "rgb(15,115,115)";
+					this.context.strokeRect(x * (SIZE + 3) + 1, y * (SIZE + 3)
+							+ 1, SIZE, SIZE);
+					this.drawCell(y, x);
+				}
 			}
+			this.context.fill();
+			this.context.stroke();
 		}
-		this.context.fill();
-		this.context.stroke();
 	};
 	
 	this.removeGrid = function() {
