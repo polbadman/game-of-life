@@ -1,0 +1,10 @@
+# Ignorar arquivos específicos
+.DS_Store
+.project
+
+# Use curingas como
+*~
+*.swp
+
+# Ignorar todos os diretórios e arquivos em um diretório.
+.settings/
